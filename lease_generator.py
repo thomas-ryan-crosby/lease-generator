@@ -89,8 +89,17 @@ def dollars_to_words(amount_str):
 
 
 def number_words(n):
-    """Convert an integer to lowercase words, e.g. 90 -> 'ninety'."""
-    return num2words(int(n), lang="en")
+    """Convert a number to lowercase words, e.g. 90 -> 'ninety', 3.5 -> 'three and one half'."""
+    n = float(n)
+    if n == int(n):
+        return num2words(int(n), lang="en")
+    whole = int(n)
+    frac = round(n - whole, 10)
+    whole_words = num2words(whole, lang="en")
+    # Express fractional part as a simple fraction (e.g. 0.5 -> "one half", 0.25 -> "one quarter")
+    frac_map = {0.25: "one quarter", 0.5: "one half", 0.75: "three quarters"}
+    frac_words = frac_map.get(frac, num2words(frac, lang="en"))
+    return f"{whole_words} and {frac_words}"
 
 
 def format_currency(amount_str):
