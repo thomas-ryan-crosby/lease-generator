@@ -1,10 +1,12 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 
+POPPLER_BIN = r"C:\Users\thoma\AppData\Local\Microsoft\WinGet\Packages\oschwartz10612.Poppler_Microsoft.Winget.Source_8wekyb3d8bbwe\poppler-25.07.0\Library\bin"
+
 a = Analysis(
     ['lease_generator.py'],
     pathex=[],
-    binaries=[],
+    binaries=[(POPPLER_BIN + r'\*.exe', 'poppler'), (POPPLER_BIN + r'\*.dll', 'poppler')],
     datas=[],
     hiddenimports=[],
     hookspath=[],

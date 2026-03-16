@@ -1261,7 +1261,9 @@ def add_floorplan_appendix(doc, filepath):
     elif ext == '.pdf':
         try:
             from pdf2image import convert_from_path
-            images = convert_from_path(filepath, dpi=200)
+            import sys
+            poppler_path = os.path.join(sys._MEIPASS, 'poppler') if getattr(sys, 'frozen', False) else None
+            images = convert_from_path(filepath, dpi=200, poppler_path=poppler_path)
             import tempfile
             for i, img in enumerate(images):
                 tmp = tempfile.NamedTemporaryFile(suffix='.png', delete=False)
