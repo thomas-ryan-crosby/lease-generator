@@ -1678,14 +1678,37 @@ class LeaseGeneratorApp:
         chk.grid(row=row, column=0, columnspan=2, sticky="w", padx=10, pady=(6, 3))
         row += 1
 
+        _recalc_guard = [False]
+
         def recalc_end(*_args):
+            if _recalc_guard[0]:
+                return
             try:
                 months = int(self.lease_fields["term_months"].get())
                 start = parse_date(self.lease_fields["start_date"].get())
                 end = start + relativedelta(months=months)
+                _recalc_guard[0] = True
                 self.lease_fields["end_date"].set(end.strftime("%m/%d/%Y"))
             except (ValueError, KeyError):
                 pass
+            finally:
+                _recalc_guard[0] = False
+
+        def recalc_term(*_args):
+            if _recalc_guard[0]:
+                return
+            try:
+                start = parse_date(self.lease_fields["start_date"].get())
+                end = parse_date(self.lease_fields["end_date"].get())
+                diff = relativedelta(end, start)
+                months = diff.years * 12 + diff.months
+                if months > 0:
+                    _recalc_guard[0] = True
+                    self.lease_fields["term_months"].set(str(months))
+            except (ValueError, KeyError):
+                pass
+            finally:
+                _recalc_guard[0] = False
 
         def recalc_first_payment(*_args):
             try:
@@ -1698,6 +1721,7 @@ class LeaseGeneratorApp:
 
         self.lease_fields["term_months"].trace_add("write", recalc_end)
         self.lease_fields["start_date"].trace_add("write", recalc_end)
+        self.lease_fields["end_date"].trace_add("write", recalc_term)
         self.lease_fields["start_date"].trace_add("write", recalc_first_payment)
 
         def sync_lobby(*_args):
